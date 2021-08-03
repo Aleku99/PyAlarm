@@ -1,9 +1,13 @@
+from tkinter import messagebox
+
 from infi.systray import SysTrayIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLineEdit, QPushButton, QComboBox, QLabel, QCheckBox
 import tkinter as tk
 import sys
 import os
 import alarm_entry
+import json
+from functools import partial
 root = tk.Tk()
 
 class MainWindow():
@@ -24,6 +28,16 @@ class MainWindow():
         win.setGeometry(self.screen_width / 2, self.screen_height / 3, self.screen_width / 2, self.screen_height / 2)
         win.setWindowTitle(self.title)
 
+        try:
+            alarm_entries_file = open("AlarmEntries","r")
+            entries_list = alarm_entries_file.readlines()
+            for index, element in enumerate(entries_list):
+                if index % 2 == 0:
+                    self.draw_entry(element, win)
+                else:
+                    pass
+        except Exception:
+            messagebox.showinfo("Error",Exception)
 
         reminder = QLineEdit(win)
         reminder.setPlaceholderText("Reminder")
@@ -67,13 +81,13 @@ class MainWindow():
 
         sound_dropdown = QComboBox(win)
         sound_dropdown.move(80, 320)
-        sound_dropdown.resize(500,30)
+        sound_dropdown.resize(400,30)
         sound_dropdown.addItems(self.sounds_list)
 
 
         button = QPushButton('Add alarm', win)
         button.move(20, 380)
-        button.clicked.connect(self.onclick(minute_dropdown.currentText(),hour_dropdown.currentText(),day_dropdown.currentText(),reminder.text(),repetitive_checkbox.isChecked())) #TODO: partial function
+        button.clicked.connect(partial(self.onclick, minute_dropdown.currentText(), hour_dropdown.currentText(), day_dropdown.currentText(),reminder.text(), repetitive_checkbox.isChecked()))
 
 
 
@@ -87,11 +101,21 @@ class MainWindow():
         return my_list2
 
     def onclick(self, minutes, hour, day, reminder, repetitive):
-        new_entry = alarm_entry.AlarmEntry()
+        new_entry = alarm_entry.AlarmEntry(minutes, hour, day, reminder, repetitive)
         new_entry_list = new_entry.get_data()
+        jsonStr = json.dumps(new_entry_list)
         alarm_entry_file = open("AlarmEntries","a")
-        alarm_entry_file.write("\n"+new_entry_list)
+        alarm_entry_file.write(jsonStr+"\n")
         alarm_entry_file.close()
+
+    def draw_entry(self, element, win): #TODO: implement this method
+        '''
+        This method creates a new entry(a new interface inside "win") which contains: index, hour, minute, day, reminder, repetitve,
+        '''
+
+
+
+
 
 
 
