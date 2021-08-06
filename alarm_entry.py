@@ -1,5 +1,15 @@
+import os
+
 from PyQt5.QtWidgets import QMessageBox
-index = 0
+
+
+if(os.stat("AlarmEntries").st_size == 0):
+    index = 0
+else:
+    with open("AlarmEntries", "r+") as f:
+        lines = f.readlines()
+        index = int(str(lines[-1].split()[0])[1:-1])
+
 class AlarmEntry:
 
         def __init__(self, minutes, hour, day, reminder, repetitive):
