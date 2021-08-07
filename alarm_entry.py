@@ -12,13 +12,14 @@ else:
 
 class AlarmEntry:
 
-        def __init__(self, minutes, hour, day, reminder, repetitive):
+        def __init__(self, minutes, hour, day, reminder="No reminder", repetitive="false", sound="default"):
             global index
             self.minutes = minutes
             self.hour = hour
             self.day = day
             self.reminder = reminder
             self.repetitive = repetitive
+            self.sound = sound
             index = index + 1
 
         def get_data(self):
@@ -30,4 +31,5 @@ class AlarmEntry:
             return_list.append(self.day)
             return_list.append(self.reminder)
             return_list.append(self.repetitive)
+            return_list.append(self.sound)
             return return_list
