@@ -9,6 +9,11 @@ import os
 import alarm_entry
 import json
 from functools import partial
+import datetime
+import winsound
+import time
+
+
 root = tk.Tk()
 
 
@@ -28,7 +33,7 @@ class MainWindow():
         self.minute = "0"
         self.day = "Monday"
         self.repetitive = False
-        self.sound = "default"
+        self.sound = "default.mp3"
         self.app = QApplication(sys.argv)
 
         self.initUI()
@@ -99,6 +104,8 @@ class MainWindow():
         self.sound_label = QLabel(self.win)
         self.sound_label.setText("Alarms:")
         self.sound_label.move(700, 20)
+
+        self.sound_alarm()
 
         if self.init == 1:
             self.win.show()
@@ -195,5 +202,36 @@ class MainWindow():
     def sound_handle_activated(self):
         self.sound = self.sound_dropdown.currentText()
 
+    def sound_alarm(self):
+        now = datetime.datetime.now()
+        minutes = str(now.minute)
+        hour = str(now.hour)
+        day = now.today().strftime("%A")
+        try:
+            alarm_entries_file = open("AlarmEntries","r")
+            entries_list = alarm_entries_file.readlines()
+            for index, element in enumerate(entries_list):
+                if str(element.split()[1])[1:-2] == hour and str(element.split()[2])[1:-2] == minutes and str(element.split()[3])[1:-2] == day:
+                    sound_string = "Sounds/" + self.sound
+                    print(sound_string)
+                    try:
+                        winsound.PlaySound(sound_string, winsound.SND_ASYNC)
+                        #winsound.Beep(500, 5000)
+                        #TODO: alarms not working;TBE
+                        winsound.PlaySound(None, winsound.SND_PURGE)
+                    except RuntimeError:
+                        msg = QMessageBox()
+                        msg.setIcon(QMessageBox.Critical)
+                        msg.setText(str(RuntimeError))
+                        msg.setWindowTitle("Alert")
+                else:
+                    print("Not the right time")
+                    print(str(element.split()[1])[1:-2] + str(element.split()[2])[1:-2] + str(element.split()[3])[1:-2])
+                    print(hour+minutes+day)
+        except Exception:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText(str(Exception))
+            msg.setWindowTitle("Alert")
 
 
