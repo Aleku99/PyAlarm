@@ -1,5 +1,6 @@
 from tkinter import messagebox
 
+from PyQt5.QtCore import QCoreApplication
 from infi.systray import SysTrayIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLineEdit, QPushButton, QComboBox, QLabel, QCheckBox, QMessageBox
 import tkinter as tk
@@ -9,7 +10,7 @@ import alarm_entry
 import json
 from functools import partial
 root = tk.Tk()
-app = QApplication(sys.argv)
+
 
 class MainWindow():
 
@@ -23,75 +24,76 @@ class MainWindow():
         self.sounds_list = os.listdir("Sounds")
         self.init = 1
         self.new_entry = 0
+        self.app = QApplication(sys.argv)
         self.initUI()
 
     def initUI(self):
 
-        win = QMainWindow()
-        win.setGeometry(self.screen_width / 2, self.screen_height / 3, self.screen_width / 2, self.screen_height / 2)
-        win.setWindowTitle(self.title)
-        self.show_entries(win)
+        self.win = QMainWindow()
+        self.win.setGeometry(self.screen_width / 2, self.screen_height / 3, self.screen_width / 2, self.screen_height / 2)
+        self.win.setWindowTitle(self.title)
+        self.show_entries(self.win)
 
-        reminder = QLineEdit(win)
-        reminder.setPlaceholderText("Reminder")
-        reminder.move(20, 20)
-        reminder.resize(160, 40)
+        self.reminder = QLineEdit(self.win)
+        self.reminder.setPlaceholderText("Reminder")
+        self.reminder.move(20, 20)
+        self.reminder.resize(160, 40)
 
-        hour_label = QLabel(win)
-        hour_label.setText("Hour")
-        hour_label.move(20, 80)
+        self.hour_label = QLabel(self.win)
+        self.hour_label.setText("Hour")
+        self.hour_label.move(20, 80)
 
-        hour_dropdown = QComboBox(win)
-        hour_dropdown.move(80,80)
-        hour_dropdown.addItems(self.hours_list)
+        self.hour_dropdown = QComboBox(self.win)
+        self.hour_dropdown.move(80,80)
+        self.hour_dropdown.addItems(self.hours_list)
 
-        minute_label = QLabel(win)
-        minute_label.setText("Minute")
-        minute_label.move(20, 140)
+        self.minute_label = QLabel(self.win)
+        self.minute_label.setText("Minute")
+        self.minute_label.move(20, 140)
 
-        minute_dropdown = QComboBox(win)
-        minute_dropdown.move(80, 140)
-        minute_dropdown.addItems(self.minutes_list)
+        self.minute_dropdown = QComboBox(self.win)
+        self.minute_dropdown.move(80, 140)
+        self.minute_dropdown.addItems(self.minutes_list)
 
-        day_label = QLabel(win)
-        day_label.setText("Day")
-        day_label.move(20, 200)
+        self.day_label = QLabel(self.win)
+        self.day_label.setText("Day")
+        self.day_label.move(20, 200)
 
-        day_dropdown = QComboBox(win)
-        day_dropdown.move(80, 200)
-        day_dropdown.addItems(self.day_list)
+        self.day_dropdown = QComboBox(self.win)
+        self.day_dropdown.move(80, 200)
+        self.day_dropdown.addItems(self.day_list)
 
-        repetitive_label = QLabel(win)
-        repetitive_label.setText("Daily")
-        repetitive_label.move(20, 260)
+        self.repetitive_label = QLabel(self.win)
+        self.repetitive_label.setText("Daily")
+        self.repetitive_label.move(20, 260)
 
-        repetitive_checkbox = QCheckBox(win)
-        repetitive_checkbox.move(80, 260)
+        self.repetitive_checkbox = QCheckBox(self.win)
+        self.repetitive_checkbox.move(80, 260)
 
-        sound_label = QLabel(win)
-        sound_label.setText("Sound")
-        sound_label.move(20, 320)
+        self.sound_label = QLabel(self.win)
+        self.sound_label.setText("Sound")
+        self.sound_label.move(20, 320)
 
-        sound_dropdown = QComboBox(win)
-        sound_dropdown.move(80, 320)
-        sound_dropdown.resize(400,30)
-        sound_dropdown.addItems(self.sounds_list)
+        self.sound_dropdown = QComboBox(self.win)
+        self.sound_dropdown.move(80, 320)
+        self.sound_dropdown.resize(400,30)
+        self.sound_dropdown.addItems(self.sounds_list)
 
 
-        button = QPushButton('Add alarm', win)
-        button.move(20, 380)
-        button.clicked.connect(partial(self.onclick, minute_dropdown.currentText(), hour_dropdown.currentText(), day_dropdown.currentText(),reminder.text(), repetitive_checkbox.isChecked()))
+        self.button = QPushButton('Add alarm', self.win)
+        self.button.move(20, 380)
+        self.button.clicked.connect(partial(self.onclick, str(self.minute_dropdown.currentText()), str(self.hour_dropdown.currentText()), str(self.day_dropdown.currentText()),str(self.reminder.text()), str(self.repetitive_checkbox.isChecked())))
 
-        sound_label = QLabel(win)
-        sound_label.setText("Alarms:")
-        sound_label.move(700, 20)
+        self.sound_label = QLabel(self.win)
+        self.sound_label.setText("Alarms:")
+        self.sound_label.move(700, 20)
 
         if self.init == 1:
-            win.show()
+            self.win.show()
             self.init = 0
-            sys.exit(app.exec_())
+            sys.exit(self.app.exec_())
         else:
-            win.show()
+            self.win.show()
 
 
     def list_of_strings(self, my_list):
