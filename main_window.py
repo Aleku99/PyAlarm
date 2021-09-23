@@ -131,12 +131,11 @@ class MainWindow():
         self.updateUI()
 
     def draw_entry(self, element, win, y_pos):
-
         minutes = str(element.split()[1])[1:-2]
         hour = str(element.split()[2])[1:-2]
         day = str(element.split()[3])[1:-2]
-        reminder = str(element.split()[4])[1:-2]
-        repetitive = str(element.split()[5])[0:-1]
+        reminder = str(element.split(",")[4])[2:-1]
+        repetitive = str(element.split(",")[5])[0:]
 
         entry_minutes_label = QLabel(win)
         entry_minutes_label.setText(minutes)
