@@ -10,12 +10,12 @@ import alarm_entry
 import json
 from functools import partial
 import datetime
-import winsound
+from pygame import mixer
 import time
+import threading
 
 
 root = tk.Tk()
-
 
 class MainWindow():
 
@@ -35,7 +35,7 @@ class MainWindow():
         self.repetitive = False
         self.sound = "default.mp3"
         self.app = QApplication(sys.argv)
-
+        self.stop = False
         self.initUI()
 
     def initUI(self):
@@ -105,15 +105,16 @@ class MainWindow():
         self.sound_label.setText("Alarms:")
         self.sound_label.move(700, 20)
 
-        self.sound_alarm()
+        self.run_background_task()
 
         if self.init == 1:
             self.win.show()
             self.init = 0
-            sys.exit(self.app.exec_())
+            ret = self.app.exec_()
+            self.stop = True #stop is used to stop worker thread
+            sys.exit(ret)
         else:
             self.win.show()
-
 
     def list_of_strings(self, my_list):
         my_list2 = []
@@ -137,13 +138,13 @@ class MainWindow():
         reminder = str(element.split(",")[4])[2:-1]
         repetitive = str(element.split(",")[5])[0:]
 
-        entry_minutes_label = QLabel(win)
-        entry_minutes_label.setText(minutes)
-        entry_minutes_label.move(600, y_pos)
-
         entry_hour_label = QLabel(win)
         entry_hour_label.setText(hour)
-        entry_hour_label.move(625, y_pos)
+        entry_hour_label.move(600, y_pos)
+
+        entry_minutes_label = QLabel(win)
+        entry_minutes_label.setText(minutes)
+        entry_minutes_label.move(625, y_pos)
 
         entry_day_label = QLabel(win)
         entry_day_label.setText(day)
@@ -202,35 +203,46 @@ class MainWindow():
         self.sound = self.sound_dropdown.currentText()
 
     def sound_alarm(self):
-        now = datetime.datetime.now()
-        minutes = str(now.minute)
-        hour = str(now.hour)
-        day = now.today().strftime("%A")
-        try:
-            alarm_entries_file = open("AlarmEntries","r")
-            entries_list = alarm_entries_file.readlines()
-            for index, element in enumerate(entries_list):
-                if str(element.split()[1])[1:-2] == hour and str(element.split()[2])[1:-2] == minutes and str(element.split()[3])[1:-2] == day:
-                    sound_string = "Sounds/" + self.sound
-                    print(sound_string)
-                    try:
-                        winsound.PlaySound(sound_string, winsound.SND_ASYNC)
-                        #winsound.Beep(500, 5000)
-                        #TODO: alarms not working;TBE
-                        winsound.PlaySound(None, winsound.SND_PURGE)
-                    except RuntimeError:
-                        msg = QMessageBox()
-                        msg.setIcon(QMessageBox.Critical)
-                        msg.setText(str(RuntimeError))
-                        msg.setWindowTitle("Alert")
-                else:
-                    print("Not the right time")
-                    print(str(element.split()[1])[1:-2] + str(element.split()[2])[1:-2] + str(element.split()[3])[1:-2])
-                    print(hour+minutes+day)
-        except Exception:
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Critical)
-            msg.setText(str(Exception))
-            msg.setWindowTitle("Alert")
+        while self.stop == False:
+            now = datetime.datetime.now()
+            minutes = str(now.minute)
+            hour = str(now.hour)
+            day = now.today().strftime("%A")
+            try:
+                alarm_entries_file = open("AlarmEntries","r")
+                entries_list = alarm_entries_file.readlines()
+                for index, element in enumerate(entries_list):
+                    if str(element.split()[2])[1:-2] == hour and str(element.split()[1])[1:-2] == minutes and str(element.split()[3])[1:-2] == day:
+                        sound_string = "Sounds/" + self.sound
+                        print(sound_string)
+                        try:
+                            mixer.init()
+                            mixer.music.load(sound_string)
+                            mixer.music.play()
+                            time.sleep(5)
+                            mixer.music.stop()
+                            mixer.quit()
+                        except RuntimeError:
+                            msg = QMessageBox()
+                            msg.setIcon(QMessageBox.Critical)
+                            msg.setText(str(RuntimeError))
+                            msg.setWindowTitle("Alert")
+                    else:
+                        print("Not the right time")
+                        print(str(element.split()[1])[1:-2] + str(element.split()[2])[1:-2] + str(element.split()[3])[1:-2])
+                        print(hour+minutes+day)
+            except Exception:
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Critical)
+                msg.setText(str(Exception))
+                msg.setWindowTitle("Alert")
+            time.sleep(5)
+        print("stopping")
+
+
+    def run_background_task(self):
+        th = threading.Thread(target=self.sound_alarm)
+        th.start()
+
 
 
