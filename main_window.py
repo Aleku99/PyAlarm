@@ -1,7 +1,8 @@
 from tkinter import messagebox
 
-from PyQt5.QtCore import QCoreApplication
-from infi.systray import SysTrayIcon
+
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLineEdit, QPushButton, QComboBox, QLabel, QCheckBox, QMessageBox
 import tkinter as tk
 import sys
@@ -25,7 +26,7 @@ class MainWindow():
         self.title = "PyAlarm"
         self.hours_list = self.list_of_strings(range(25))
         self.minutes_list = self.list_of_strings(range(61))
-        self.day_list = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturnday", "Sunday"]
+        self.day_list = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
         self.sounds_list = os.listdir("Sounds")
         self.init = 1
         self.new_entry = 0
@@ -35,7 +36,9 @@ class MainWindow():
         self.repetitive = False
         self.sound = "default.mp3"
         self.app = QApplication(sys.argv)
+        self.alarm_started = 0
         self.stop = False
+
         self.initUI()
 
     def initUI(self):
@@ -212,31 +215,35 @@ class MainWindow():
                 alarm_entries_file = open("AlarmEntries","r")
                 entries_list = alarm_entries_file.readlines()
                 for index, element in enumerate(entries_list):
-                    if str(element.split()[2])[1:-2] == hour and str(element.split()[1])[1:-2] == minutes and str(element.split()[3])[1:-2] == day:
-                        sound_string = "Sounds/" + self.sound
-                        print(sound_string)
-                        try:
-                            mixer.init()
-                            mixer.music.load(sound_string)
-                            mixer.music.play()
-                            time.sleep(5)
-                            mixer.music.stop()
-                            mixer.quit()
-                        except RuntimeError:
-                            msg = QMessageBox()
-                            msg.setIcon(QMessageBox.Critical)
-                            msg.setText(str(RuntimeError))
-                            msg.setWindowTitle("Alert")
-                    else:
-                        print("Not the right time")
-                        print(str(element.split()[1])[1:-2] + str(element.split()[2])[1:-2] + str(element.split()[3])[1:-2])
-                        print(hour+minutes+day)
+                    self.sound = str(element.split(",")[6])[2:-3]
+                    if self.alarm_started == 0:
+                        if str(element.split()[2])[1:-2] == hour and str(element.split()[1])[1:-2] == minutes and str(element.split()[3])[1:-2] == day:
+                            sound_string = "Sounds/" + self.sound
+                            print(sound_string)
+                            try:
+                                mixer.init()
+                                mixer.music.load(sound_string)
+                                mixer.music.play()
+                                time.sleep(60)
+                                mixer.music.stop()
+                                mixer.quit()
+                                self.alarm_started = 1
+                            except RuntimeError:
+                                msg = QMessageBox()
+                                msg.setIcon(QMessageBox.Critical)
+                                msg.setText(str(RuntimeError))
+                                msg.setWindowTitle("Alert")
+                        else:
+                            print("Not the right time")
+                            print(str(element.split()[1])[1:-2] + str(element.split()[2])[1:-2] + str(element.split()[3])[1:-2])
+                            print(hour+minutes+day)
             except Exception:
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Critical)
                 msg.setText(str(Exception))
                 msg.setWindowTitle("Alert")
-            time.sleep(5)
+            self.alarm_started = 0
+            time.sleep(1)
         print("stopping")
 
 
