@@ -1,8 +1,3 @@
-from tkinter import messagebox
-
-
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLineEdit, QPushButton, QComboBox, QLabel, QCheckBox, QMessageBox
 import tkinter as tk
 import sys
@@ -219,7 +214,6 @@ class MainWindow():
                     if self.alarm_started == 0:
                         if str(element.split()[2])[1:-2] == hour and str(element.split()[1])[1:-2] == minutes and str(element.split()[3])[1:-2] == day:
                             sound_string = "Sounds/" + self.sound
-                            print(sound_string)
                             try:
                                 mixer.init()
                                 mixer.music.load(sound_string)
@@ -234,9 +228,7 @@ class MainWindow():
                                 msg.setText(str(RuntimeError))
                                 msg.setWindowTitle("Alert")
                         else:
-                            print("Not the right time")
-                            print(str(element.split()[1])[1:-2] + str(element.split()[2])[1:-2] + str(element.split()[3])[1:-2])
-                            print(hour+minutes+day)
+                            pass
             except Exception:
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Critical)
@@ -244,7 +236,7 @@ class MainWindow():
                 msg.setWindowTitle("Alert")
             self.alarm_started = 0
             time.sleep(1)
-        print("stopping")
+
 
 
     def run_background_task(self):

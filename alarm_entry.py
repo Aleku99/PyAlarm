@@ -1,6 +1,5 @@
 import os
 
-from PyQt5.QtWidgets import QMessageBox
 
 
 if(os.stat("AlarmEntries").st_size == 0):
