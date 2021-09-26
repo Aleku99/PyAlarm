@@ -18,7 +18,7 @@ else:
 
 class AlarmEntry:
 
-        def __init__(self, minutes, hour, day, reminder="No reminder", repetitive="false", sound="default"):
+        def __init__(self, minutes, hour, day, reminder="No reminder", repetitive="false", sound="theresnomusicfilesinthesoundfolderhahaha"):
             global index
             self.minutes = minutes
             self.hour = hour

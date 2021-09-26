@@ -30,7 +30,7 @@ class MainWindow():
         self.minute = "0"
         self.day = "Monday"
         self.repetitive = False
-        self.sound = "default.mp3"
+        self.sound = "theresnomusicfilesinthesoundfolderhahaha"
         self.app = QApplication(sys.argv)
         self.alarm_started = 0
         self.stop = False
@@ -211,13 +211,14 @@ class MainWindow():
                 alarm_entries_file = open("AlarmEntries","r")
                 entries_list = alarm_entries_file.readlines()
                 for index, element in enumerate(entries_list):
-                    self.sound = str(element.split(",")[6])[2:-3]
+                    self.sound_from_AlarmEntries = str(element.split(",")[6])[2:-3]
+                    #print(self.sound)
                     if self.alarm_started == 0:
                         if str(element.split()[2])[1:-2] == hour and str(element.split()[1])[1:-2] == minutes and str(element.split()[3])[1:-2] == day:
-                            sound_string = "Sounds/" + self.sound
+                            sound_string = "Sounds/" + self.sound_from_AlarmEntries
                             try:
                                 mixer.init()
-                                if len(self.sound > 0):
+                                if self.sound_from_AlarmEntries != "theresnomusicfilesinthesoundfolderhahaha":
                                     mixer.music.load(sound_string)
                                     mixer.music.play()
                                     time.sleep(60)
