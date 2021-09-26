@@ -1,3 +1,4 @@
+import winsound
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLineEdit, QPushButton, QComboBox, QLabel, QCheckBox, QMessageBox
 import tkinter as tk
 import sys
@@ -216,12 +217,15 @@ class MainWindow():
                             sound_string = "Sounds/" + self.sound
                             try:
                                 mixer.init()
-                                mixer.music.load(sound_string)
-                                mixer.music.play()
-                                time.sleep(60)
-                                mixer.music.stop()
-                                mixer.quit()
-                                self.alarm_started = 1
+                                if len(self.sound > 0):
+                                    mixer.music.load(sound_string)
+                                    mixer.music.play()
+                                    time.sleep(60)
+                                    mixer.music.stop()
+                                    mixer.quit()
+                                    self.alarm_started = 1
+                                else:
+                                    winsound.Beep(duration=60)
                             except RuntimeError:
                                 msg = QMessageBox()
                                 msg.setIcon(QMessageBox.Critical)
