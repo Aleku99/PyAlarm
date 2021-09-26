@@ -212,7 +212,7 @@ class MainWindow():
                 entries_list = alarm_entries_file.readlines()
                 for index, element in enumerate(entries_list):
                     self.sound_from_AlarmEntries = str(element.split(",")[6])[2:-3]
-                    #print(self.sound)
+                    #print(self.sound_from_AlarmEntries)
                     if self.alarm_started == 0:
                         if str(element.split()[2])[1:-2] == hour and str(element.split()[1])[1:-2] == minutes and str(element.split()[3])[1:-2] == day:
                             sound_string = "Sounds/" + self.sound_from_AlarmEntries
@@ -221,12 +221,14 @@ class MainWindow():
                                 if self.sound_from_AlarmEntries != "theresnomusicfilesinthesoundfolderhahaha":
                                     mixer.music.load(sound_string)
                                     mixer.music.play()
-                                    time.sleep(60)
+                                    time.sleep(30)
                                     mixer.music.stop()
                                     mixer.quit()
                                     self.alarm_started = 1
                                 else:
-                                    winsound.Beep(duration=60)
+                                    winsound.Beep(frequency=2500,duration=30000)
+                                    self.alarm_started = 1
+                                    print("fmmmmmm")
                             except RuntimeError:
                                 msg = QMessageBox()
                                 msg.setIcon(QMessageBox.Critical)
