@@ -2,12 +2,19 @@ import os
 
 
 
-if(os.stat("AlarmEntries").st_size == 0):
+if(not os.path.exists("AlarmEntries")):
     index = 0
+    f = open("AlarmEntries", "w")
+    f.close()
+
+elif os.stat("AlarmEntries").st_size == 0:
+    index = 0
+
 else:
     with open("AlarmEntries", "r+") as f:
         lines = f.readlines()
         index = int(str(lines[-1].split()[0])[1:-1])
+
 
 class AlarmEntry:
 
