@@ -22,7 +22,7 @@ class MainWindow():
         self.hours_list = self.list_of_strings(range(25))
         self.minutes_list = self.list_of_strings(range(61))
         self.day_list = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-        self.sounds_list = os.listdir("Sounds")
+        self.sounds_list = self.check_available_sounds()
         self.init = 1
         self.new_entry = 0
         self.hour = "0"
@@ -238,10 +238,15 @@ class MainWindow():
             time.sleep(1)
 
 
-
     def run_background_task(self):
         th = threading.Thread(target=self.sound_alarm)
         th.start()
 
+    def check_available_sounds(self):
+        if (not os.path.isdir("Sounds")):
+            os.mkdir("Sounds")
+            return []
+        else:
+            return os.listdir("Sounds")
 
 
